@@ -15,10 +15,6 @@ class CustomEncoder(json.JSONEncoder):
             return super(CustomEncoder, self).default(obj)
 
 
-def int_to_ip(x):
-    return '.'.join([str(x//(256**i) % 256) for i in range(3, -1, -1)])
-
-
 def get_data(data_name):
     return data[data_name]
 
@@ -141,7 +137,7 @@ def getdata():
 @app.route('/postdata', methods=['POST'])
 def postdata():
     '''
-    后端通过这个接口将数据以json格式发给前端
+    以json格式接收数据
     '''
     global data
 
