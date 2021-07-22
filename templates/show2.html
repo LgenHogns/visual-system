@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}网络可视化展示平台{% endblock %}
+
+{% block main %}
+<div class="titleblock" style="position:absolute;left:8%;right:8%;top:5%;bottom:85%;">
+	<h2>Heavy change detection</h2>
+</div>
+
+<div class="block" id="block1" style="position:absolute;left:8%;right:8%;top:18%;bottom:15%;padding-top:30px">
+	<div id="tablebox"></div>
+</div>
+
+<div class="block" id="block2" style="position:absolute;left:8%;right:35%;top:87%;bottom:8%;padding:12px 40px">
+</div>
+
+<div class="block" id="block3" onclick="homepage()" style="position:absolute;left:66%;right:30%;top:87%;bottom:8%;text-align:center;padding:9px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer">
+	首页
+</div>
+
+<div class="block" id="block4" onclick="prevpage()" style="position:absolute;left:71%;right:25%;top:87%;bottom:8%;text-align:center;padding:9px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer">
+	上页
+</div>
+
+<div class="block" id="block5" style="position:absolute;left:76%;right:18%;top:87%;bottom:8%;text-align:center;padding:12px 0px;">
+</div>
+
+<div class="block" id="block6" onclick="nextpage()" style="position:absolute;left:83%;right:13%;top:87%;bottom:8%;text-align:center;padding:9px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer">
+	次页
+</div>
+
+<div class="block" id="block7" onclick="endpage()" style="position:absolute;left:88%;right:8%;top:87%;bottom:8%;text-align:center;padding:9px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer">
+	末页
+</div>
+
+<div style="color:#999;position:absolute;bottom:3%;right:8%">2021 Designed by Zining Dong.</div>
+
+<script>
+var option = {
+		bLengthChange: false,
+		paging: false,
+		iDisplayLength: 100,
+		scrollY: '56vh',
+		searching: false,
+		autoWidth: true,
+		info: false
+};
+
+var Table;
+var dataset;
+var page = 1;
+
+var getTableData = function(start, end)
+{
+	ret = [];
+	ret.push('<thead><tr><th>ID</th><th>源IP地址</th><th>源端口</th>');
+	ret.push('<th>目的IP地址</th><th>目的端口</th><th>传输层协议</th>');
+	ret.push('<th>流量变化</th></tr></thead><tbody>');
+	for (let i = start; i < end; ++i)
+		if (i >= 0 && i < dataset.length)
+			ret.push(dataset[i]);
+	ret.push('</tbody>');
+	console.log(ret.join(''))
+	return ret.join('');
+}
+
+var setPage = function(_page)
+{
+	document.getElementById('tablebox').style.opacity = 0;
+	if (Table)
+	{
+		Table.destroy();
+		Table.clear();
+		Table = null;
+		document.getElementById("flowtable").remove();
+	}
+	page = _page;
+	var div = document.getElementById("tablebox");
+	div.innerHTML = "<table id='flowtable' class='display table table-bordered'> " + getTableData((page - 1) * 100, page * 100) + " </table>";
+	Table = $('#flowtable').DataTable(option);
+	document.getElementById('tablebox').style.opacity = 1;
+	document.getElementById("block2").innerHTML = "Showing " + ((page - 1) * 100 + 1) + " to " + Math.min(page * 100, dataset.length) + " of " + dataset.length + " entries."
+	document.getElementById("block5").innerHTML = page + " / " + Math.ceil(dataset.length / 100)
+}
+
+var homepage = function()
+{
+	setPage(1);
+}
+
+var prevpage = function()
+{
+	if (page > 1)
+		setPage(page - 1);
+}
+
+var nextpage = function()
+{
+	if (page < Math.ceil(dataset.length / 100))
+		setPage(page + 1);
+}
+
+var endpage = function()
+{
+	setPage(Math.ceil(dataset.length / 100));
+}
+
+var draw = function(data)
+{
+	console.log(data)
+	dataset = data;
+	setPage(1);
+}
+
+window.onresize = function ()
+{
+    setPage(page);
+};
+</script>
+{% endblock %}

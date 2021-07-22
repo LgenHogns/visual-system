@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link rel="shortcut icon" href="{{ url_for('static', filename='data/icon.png') }}">
+	<title>{% block title %}网络可视化展示平台{% endblock %}</title>
+	<link href="{{ url_for('static', filename='theme/style.css') }}" type="text/css" rel="stylesheet">
+	<link href="{{ url_for('static', filename='theme/table.css') }}" type="text/css" rel="stylesheet">
+	<!-- jquery -->
+	<script src="/static/js/jquery-3.6.0.js"></script>
+	<!-- DataTables -->
+	<link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+	<script type="text/javascript" charset="utf8" src="http://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+	<!-- Echarts -->
+	<script src="/static/js/echarts.min.js"></script>
+	<script src="/static/js/macarons.js"></script>
+</head>
+<html>
+<body>
+	<div id="sidebar">
+		<h1 style="font-size: 30px; letter-spacing: 0.1ex;" id="callblock0">网络可视化展示平台</h1>
+		<div class="buttons">
+			<ul>
+				<li><a id="callblock0" href="#" onclick="redirect_page(0)" > Flow size estimation </a></li>
+				<li><a id="callblock1" href="#" onclick="redirect_page(1)" > Heavy hitter detection </a></li>
+				<li><a id="callblock2" href="#" onclick="redirect_page(2)" > Heavy change detection </a></li>
+			</ul>
+		</div>
+		<div id="container_side" style="position:absolute;left:10%;width:80%;bottom:100px;height:90px"></div>
+	</div>
+	<div id="main">
+		{% block main %}
+		{% endblock %}
+	</div>
+	{% block body %}
+	{% endblock %}
+</body>
+<script>
+
+var dataid = {{ sidedata.dataid | safe }};
+var pageid = {{ pageid | safe }};
+
+var sidedata;
+
+function redirect_page(pageid)
+{
+	var url;
+	if (pageid)
+		url = '/show/' + pageid;
+	else
+		url = '/'
+	if (dataid)
+		window.location.href = url + '?id=' + dataid;
+	else
+		window.location.href = url;
+}
+
+function redirect_reflesh(){
+	window.location.href = '/reflesh?url=' + window.location.pathname;
+}
+
+var sidebarChart = echarts.init(document.getElementById("container_side"), 'macarons');
+
+var sidedata = {{ sidedata | safe }};
+
+var sidebarformatter = function (params)
+{
+	var str = '<div style="text-align:left">'
+	str += params.marker + ' Data ' + params.name + '<br>';
+	str += '　 <strong>' + params.data.time + '</strong><br>';
+	str += '　 <strong>Cardinality: ' + params.data.value[1] + '</strong><br>';
+	str += '</div>'
+	return str;
+}
+
+var sidebaroption = {
+	tooltip: {
+		trigger: 'item'
+	},
+	grid: [
+		{left: '5%', right: '5%', top: '5%', bottom: '20%', containLabel: true}
+	],
+	xAxis: [
+		{
+			type: 'category',
+			gridIndex: 0,
+			axisLabel: {
+				show: false
+			},
+			axisTick: {
+				show: false
+			},
+			axisLine: {
+				lineStyle: {
+					color: '#759aa0',
+					width: 2
+				}
+			}
+		}
+	],
+	yAxis: [
+		{
+			type: 'value',
+			gridIndex: 0,
+			show: false,
+			max: 'dataMax',
+			axisLabel:
+			{
+				show: false
+			}
+		}
+	],
+	dataZoom: [
+		{
+			type: 'inside',
+			xAxisIndex: 0,
+			fiterMode: 'filter',
+			// startValue: 0,
+			// endValue: 2,
+		}
+	],
+	series: [
+		{
+			id: 'bar1',
+			name: 'Attribution',
+			type: 'bar',
+			tooltip: {},
+			xAxisIndex: 0,
+			yAxisIndex: 0,
+			itemStyle: {
+				barBorderRadius: [5, 5, 0, 0],
+				shadowBlur: 5
+			},
+		},
+		{
+			id: 'pie1',
+			type: 'pie',
+			center: ['50%', '95%'],
+			radius: ['0%'],
+			tooltip: { show: false },
+			color: 'rgba(255,255,255, 0.8)',
+			label: {
+				position: 'center',
+				fontSize: 12,
+				fontWeight: 'bold',
+				textBorderColor: 'rgba(255,255,255,0.6)',
+				textBorderWidth: 2
+			},
+		}
+	]
+};
+
+var getServerData = function(pageid, dataid)
+{
+	var url = "/getdata?pageid=" + pageid + "&dataid=" + dataid;
+	var request = new XMLHttpRequest();
+	request.open("GET", url);
+	request.send(null);
+	request.onload = function() {
+		if(request.status == 200) {
+			var chart1 = JSON.parse(request.responseText);
+			draw(chart1);
+		}
+	}
+}
+
+sidebarChart.on('click', 'series', function(obj) {
+	dataid = obj.data.value[0];
+	getServerData(pageid, dataid);
+})
+
+var drawsidebar = function(data)
+{
+	sidedata = data;
+	sidebarChart.clear();
+	getServerData(pageid, dataid);
+}
+
+drawsidebar({{ sidedata | safe }})
+
+</script>
+</html>
