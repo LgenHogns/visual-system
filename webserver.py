@@ -87,8 +87,8 @@ def get_heavy_change():
 
 
 data = {'flow_size': [[1, 1, 1, 1, 1, 1]],
-        'heavy_hitter': [[1, 1, 1, 1, 1, 1]],
-        'heavy_change': [[1, 1, 1, 1, 1, 1]]}
+        'heavy_hitter': [[2, 2, 2, 2, 2, 2]],
+        'heavy_change': [[3, 3, 3, 3, 3, 3]]}
 app = Flask(__name__)
 
 
