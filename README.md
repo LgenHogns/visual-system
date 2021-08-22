@@ -8,7 +8,7 @@ sudo pip install -r requirements.txt
 
 ## 运行
 
-先修改settings.ini为mysql数据库的账号密码等，然后运行
+先修改`settings.ini`为`mysql`数据库的账号密码等，然后运行
 
 ```shell
 python webserver.py
@@ -16,12 +16,13 @@ python webserver.py
 
 ## 向服务器发送数据格式
 
-使用postdata接口以json格式发送,
-flows为[src_ip,dst_ip,src_port,dst_port,protocol,size],
-heavy_hitter为[src_ip,dst_ip,src_port,dst_port,protocol,size],
-heavy_change为[src_ip,dst_ip,src_port,dst_port,protocol,increment],
-distribution为[idx,num]，表示大小为idx的流预估有num个（只包含num大于0的）,
-inflated_latency为[src_ip,dst_ip,src_port,dst_port,protocol,switch_id]
+使用`postdata`接口以`json`格式发送,
+`flows`为`[src_ip,dst_ip,src_port,dst_port,protocol,size]`,
+`heavy_hitter`为`[src_ip,dst_ip,src_port,dst_port,protocol,size]`,
+`heavy_change`为`[src_ip,dst_ip,src_port,dst_port,protocol,increment]`,
+`distribution`为`[idx,num]`，表示大小为`idx`的流预估有`num`个（只包含`num`大于0的）,
+`inflated_latency`为`[src_ip,dst_ip,src_port,dst_port,protocol,switch_id]`
+
 样例：
 
 ``` json
