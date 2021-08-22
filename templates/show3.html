@@ -1,0 +1,84 @@
+{% extends 'base.html' %} {% block title %}网络可视化展示平台{% endblock %} {% block main %}
+<div class="titleblock" style="position:absolute;left:8%;right:8%;top:5%;bottom:85%;">
+    <h2>Flow distribution and entropy</h2>
+</div>
+<div class="block" id="flow" style="position:absolute;left:8%;right:52%;top:18%;bottom:8%"></div>
+<div class="block" id="en" style="position:absolute;left:52%;right:8%;top:18%;bottom:45%"></div>
+<div class="block" id="card" style="position:absolute;left:52%;right:8%;top:55%;bottom:8%"></div>
+<script>
+var i = new Array()
+var chart_data
+var option = {
+    title: {
+        text: 'Flow distribution',
+        left: 'center'
+    },
+    tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b} : {c} ({d}%)'
+    },
+    legend: {
+        bottom: 10,
+        left: 'center',
+        data: ['≤20', '≤50', '≤200', '≤500', '≤2K', '>2K']
+    },
+    series: [
+        {
+            type: 'pie',
+            radius: '65%',
+            center: ['50%', '50%'],
+            selectedMode: 'single',
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            }
+        }
+    ]
+};
+var option2 = {
+    series: [{
+        name: 'Entropy',
+        type: 'gauge',
+        radius: '110%',
+        center: ["50%", "55%"],
+        detail: {
+            formatter: '{value}'
+        }
+    }]
+};
+var option3 = {
+    series: [{
+        name: 'Cardinality',
+        type: 'gauge',
+        radius: '110%',
+        center: ["50%", "55%"],
+        detail: {
+            formatter: '{value}'
+        }
+    }]
+};
+var draw = function(data){
+    chart_data = data
+    for(var j = 0; j < 6; j++) i[j] = chart_data['flow_dis'][j]
+    option.series[0].data = [
+        {value: i[0], name: '≤20'},
+        {value: i[1], name: '≤50'},
+        {value: i[2], name: '≤200'},
+        {value: i[3], name: '≤500'},
+        {value: i[4], name: '≤2K'},
+        {value: i[5], name: '>2K'}
+    ]
+    option2.series[0].data = [{value: chart_data['entropy'], name: 'ENTROPY'}]
+    option3.series[0].data = [{value: chart_data['card'], name: 'CARDINALITY'}]
+    var flow_Dis = echarts.init(document.getElementById('flow'))
+    var flow_Dis2 = echarts.init(document.getElementById('en'))
+    var card = echarts.init(document.getElementById('card'))
+    flow_Dis.setOption(option)
+    flow_Dis2.setOption(option2)
+    card.setOption(option3)
+}
+</script>
+{% endblock %}

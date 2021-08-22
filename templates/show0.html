@@ -1,118 +1,103 @@
-{% extends "base.html" %}
-
-{% block title %}网络可视化展示平台{% endblock %}
-
-{% block main %}
+{% extends "base.html" %} {% block title %}网络可视化展示平台{% endblock %} {% block main %}
 <div class="titleblock" style="position:absolute;left:8%;right:8%;top:5%;bottom:85%;">
-	<h2>Flow size</h2>
+    <h2>Flow size</h2>
 </div>
 
 <div class="block" id="block1" style="position:absolute;left:8%;right:8%;top:18%;bottom:15%;padding-top:30px">
-	<div id="tablebox"></div>
+    <div id="tablebox"></div>
 </div>
 
 <div class="block" id="block2" style="position:absolute;left:8%;right:35%;top:87%;bottom:8%;padding:6px 40px;height:24px;line-height:24px;">
 </div>
 
 <div class="block" id="block3" onclick="homepage()" style="position:absolute;left:66%;right:30%;top:87%;bottom:8%;text-align:center;padding:4px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer;height:23px;line-height:23px;">
-	首页
+    首页
 </div>
 
 <div class="block" id="block4" onclick="prevpage()" style="position:absolute;left:71%;right:25%;top:87%;bottom:8%;text-align:center;padding:4px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer;height:23px;line-height:23px;">
-	上页
+    上页
 </div>
 
 <div class="block" id="block5" style="position:absolute;left:76%;right:18%;top:87%;bottom:8%;text-align:center;padding:6px 0px;height:24px;line-height:24px;">
 </div>
 
 <div class="block" id="block6" onclick="nextpage()" style="position:absolute;left:83%;right:13%;top:87%;bottom:8%;text-align:center;padding:4px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer;height:23px;line-height:23px;">
-	次页
+    次页
 </div>
 
 <div class="block" id="block7" onclick="endpage()" style="position:absolute;left:88%;right:8%;top:87%;bottom:8%;text-align:center;padding:4px 0px;border:3px solid rgba(0,0,0,0.15);cursor:pointer;height:23px;line-height:23px;">
-	末页
+    末页
 </div>
 
 <script>
-var option = {
-		bLengthChange: false,
-		paging: false,
-		iDisplayLength: 100,
-		scrollY: '56vh',
-		searching: false,
-		autoWidth: true,
-		info: false
-};
+    var option = {
+        bLengthChange: false,
+        paging: false,
+        iDisplayLength: 100,
+        scrollY: '56vh',
+        searching: false,
+        autoWidth: true,
+        info: false
+    };
 
-var Table;
-var dataset;
-var page = 1;
+    var Table;
+    var dataset;
+    var page = 1;
 
-var getTableData = function(start, end)
-{
-	ret = [];
-	ret.push('<thead><tr><th>ID</th><th>源IP地址</th><th>源端口</th>');
-	ret.push('<th>目的IP地址</th><th>目的端口</th><th>传输层协议</th>');
-	ret.push('<th>估计流量</th></tr></thead><tbody>');
-	for (let i = start; i < end; ++i)
-		if (i >= 0 && i < dataset.length)
-			ret.push(dataset[i]);
-	ret.push('</tbody>');
-	console.log(ret.join(''))
-	return ret.join('');
-}
+    var getTableData = function(start, end) {
+        ret = [];
+        ret.push('<thead><tr><th>源IP地址</th><th>源端口</th>');
+        ret.push('<th>目的IP地址</th><th>目的端口</th><th>传输层协议</th>');
+        ret.push('<th>估计流量</th></tr></thead><tbody>');
+        for (let i = start; i < end; ++i)
+            if (i >= 0 && i < dataset.length)
+                ret.push(dataset[i]);
+        ret.push('</tbody>');
+        return ret.join('');
+    }
 
-var setPage = function(_page)
-{
-	document.getElementById('tablebox').style.opacity = 0;
-	if (Table)
-	{
-		Table.destroy();
-		Table.clear();
-		Table = null;
-		document.getElementById("flowtable").remove();
-	}
-	page = _page;
-	var div = document.getElementById("tablebox");
-	div.innerHTML = "<table id='flowtable' class='display table table-bordered'> " + getTableData((page - 1) * 100, page * 100) + " </table>";
-	Table = $('#flowtable').DataTable(option);
-	document.getElementById('tablebox').style.opacity = 1;
-	document.getElementById("block2").innerHTML = "Showing " + ((page - 1) * 100 + 1) + " to " + Math.min(page * 100, dataset.length) + " of " + dataset.length + " entries."
-	document.getElementById("block5").innerHTML = page + " / " + Math.ceil(dataset.length / 100)
-}
+    var setPage = function(_page) {
+        document.getElementById('tablebox').style.opacity = 0;
+        if (Table) {
+            Table.destroy();
+            Table.clear();
+            Table = null;
+            document.getElementById("flowtable").remove();
+        }
+        page = _page;
+        var div = document.getElementById("tablebox");
+        div.innerHTML = "<table id='flowtable' class='display table table-bordered'> " + getTableData((page - 1) * 100, page * 100) + " </table>";
+        Table = $('#flowtable').DataTable(option);
+        document.getElementById('tablebox').style.opacity = 1;
+        document.getElementById("block2").innerHTML = "Showing " + ((page - 1) * 100 + 1) + " to " + Math.min(page * 100, dataset.length) + " of " + dataset.length + " entries."
+        document.getElementById("block5").innerHTML = page + " / " + Math.ceil(dataset.length / 100)
+    }
 
-var homepage = function()
-{
-	setPage(1);
-}
+    var homepage = function() {
+        setPage(1);
+    }
 
-var prevpage = function()
-{
-	if (page > 1)
-		setPage(page - 1);
-}
+    var prevpage = function() {
+        if (page > 1)
+            setPage(page - 1);
+    }
 
-var nextpage = function()
-{
-	if (page < Math.ceil(dataset.length / 100))
-		setPage(page + 1);
-}
+    var nextpage = function() {
+        if (page < Math.ceil(dataset.length / 100))
+            setPage(page + 1);
+    }
 
-var endpage = function()
-{
-	setPage(Math.ceil(dataset.length / 100));
-}
+    var endpage = function() {
+        setPage(Math.ceil(dataset.length / 100));
+    }
 
-var draw = function(data)
-{
-	console.log(data)
-	dataset = data;
-	setPage(1);
-}
+    var draw = function(data) {
+        dataset = data;
+        setPage(1);
+    }
 
-window.onresize = function ()
-{
-    setPage(page);
-};
+    window.onresize = function() {
+        setPage(page);
+    }
 </script>
 {% endblock %}

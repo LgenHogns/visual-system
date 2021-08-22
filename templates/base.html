@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <head>
 	<meta charset="UTF-8">
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<!--
+		<meta http-equiv="refresh" content="4" />
+	-->
 	<link rel="shortcut icon" href="{{ url_for('static', filename='data/icon.png') }}">
 	<title>{% block title %}网络可视化展示平台{% endblock %}</title>
 	<link href="{{ url_for('static', filename='theme/style.css') }}" type="text/css" rel="stylesheet">
@@ -24,6 +26,8 @@
 				<li><a id="callblock0" href="#" onclick="redirect_page(0)" > Flow size </a></li>
 				<li><a id="callblock1" href="#" onclick="redirect_page(1)" > Heavy hitter </a></li>
 				<li><a id="callblock2" href="#" onclick="redirect_page(2)" > Heavy change </a></li>
+				<li><a id="callblock2" href="#" onclick="redirect_page(3)" > Flow distribution </a></li>
+				<li><a id="callblock2" href="#" onclick="redirect_page(4)" > Inflated latency </a></li>
 			</ul>
 		</div>
 		<div id="container_side" style="position:absolute;left:10%;width:80%;bottom:100px;height:90px"></div>
@@ -150,11 +154,11 @@ var sidebaroption = {
 	]
 };
 
-var getServerData = function(pageid, dataid)
+var getServerData = async function(pageid, dataid)
 {
 	var url = "/getdata?pageid=" + pageid + "&dataid=" + dataid;
 	var request = new XMLHttpRequest();
-	request.open("GET", url);
+	await request.open("GET", url);
 	request.send(null);
 	request.onload = function() {
 		if(request.status == 200) {
@@ -177,6 +181,10 @@ var drawsidebar = function(data)
 }
 
 drawsidebar({{ sidedata | safe }})
+
+window.setInterval(function() {
+    getServerData(pageid, dataid);
+}, 4000)
 
 </script>
 </html>
