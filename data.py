@@ -231,7 +231,6 @@ class DBData:
         db.commit()
         cursor.close()
         db.close()
-
         return result
 
     def set_size(self, tid, value):
